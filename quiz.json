@@ -1,0 +1,84 @@
+{
+    "question-per-page": 1,
+    "question-per-test": 4,
+    "questions": [
+        {
+            "question": "The answer to question one is 1.",
+            "answers": {
+                "true": [
+                    "one"
+                ],
+                "false": [
+                    "two",
+                    "three",
+                    "four"
+                ]
+            }
+        },
+        {
+            "question": "The answer to question one is 2.",
+            "answers": {
+                "true": [
+                    "two"
+                ],
+                "false": [
+                    "one",
+                    "three",
+                    "four"
+                ]
+            }
+        },
+        {
+            "question": "The answer to question one is 2 & 3.",
+            "answers": {
+                "true": [
+                    "two",
+                    "three"
+                ],
+                "false": [
+                    "one",
+                    "four"
+                ]
+            }
+        },
+        {
+            "question": "The answer to question one is 1 & 4 & 3.",
+            "answers": {
+                "true": [
+                    "one",
+                    "three",
+                    "four"
+                ],
+                "false": [
+                    "two"
+                ]
+            }
+        },
+        {
+            "question": "The answer to question one is 4.",
+            "answers": {
+                "true": [
+                    "four"
+                ],
+                "false": [
+                    "one",
+                    "three",
+                    "two"
+                ]
+            }
+        },
+        {
+            "question": "The answer to question one is 5.",
+            "answers": {
+                "true": [
+                    "five"
+                ],
+                "false": [
+                    "four",
+                    "three",
+                    "two"
+                ]
+            }
+        }
+    ]
+}
