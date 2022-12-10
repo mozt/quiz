@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import SelectMultipleField,StringField
-from wtforms.validators import ValidationError, NumberRange
+from wtforms import SelectMultipleField
+from wtforms.validators import ValidationError
 import json
 import random
 
@@ -18,8 +18,6 @@ class CorrectAnswer(object):
 class PopQuiz(Form):
     class Meta:
         csrf = False
-
-    title = 'TEST'
 
     @classmethod
     def builder(cls, data):
