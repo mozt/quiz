@@ -12,7 +12,7 @@ docker run -p {LOCAL PORT}:8080 -d quiz
 Стучись в http://localhost:{LOCAL PORT}
 
 ### Launch local
-1. Поставь питон 3.11 и pip
+1. Поставь питон 3.10+ и pip
 1. Поставь зависимости: `pip install -r requirements.txt`
 1. Запусти: `python3 routes.py`
 1. Стучись в http://localhost:8080
