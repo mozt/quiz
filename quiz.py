@@ -47,7 +47,7 @@ class Quiz(object):
                 raise IndexError('Set ended')
         return question
 
-    def PopQuiz(self, pop=False) -> object:
+    def PopQuiz(self, pop=False) -> Form:
         class StaticForm(Form):
             class Meta:
                 csrf = False
