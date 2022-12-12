@@ -52,8 +52,7 @@ def login():
         try:
             if sha256(request.form['password'].encode()).hexdigest() == users[request.form['user_name']]:
                 session['user'] = request.form['user_name']
-                data = Quiz(app.config.get('QUIZ_FILE'))
-                session['data'] = data.toJSON()
+                session['data'] = Quiz(app.config.get('QUIZ_FILE')).toJSON()
                 session.permanent = True
                 return redirect(url_for('quiz'))
         except KeyError:
