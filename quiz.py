@@ -15,19 +15,6 @@ class CorrectAnswer(object):
         if field.data != self.answer:
             raise ValidationError(message)
 
-def PopQuiz(data):
-    class StaticForm(Form):
-        class Meta:
-            csrf = False
-
-    i = 0
-    for line in data.question:
-        i += 1
-        chcs=line['answers']['true']+line['answers']['false']
-        random.shuffle(chcs)
-        setattr(StaticForm,'q'+str(i),SelectMultipleField(line['question'], choices=chcs, validators=[CorrectAnswer(line['answers']['true'])]))
-    return StaticForm()
-
 class Quiz(object):
     def __init__(self, file=None, from_json=False, data=None):
         if from_json:
@@ -41,23 +28,35 @@ class Quiz(object):
                 random.shuffle(self.set)
             f.close()
     
-    def toJSON(self):
+    def toJSON(self) -> bytes:
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     @staticmethod
-    def fromJSON(json_dct):
+    def fromJSON(json_dct) -> object:
       return Quiz(from_json=True, data=json.loads(json_dct))
 
     @property
-    def question(self):
+    def question(self) -> list:
         question = []
         for i in range(0,self.question_per_page):
             try:
                 question.append(self.set[i])
             except IndexError:
                 raise IndexError('Set ended')
-        return question
+        return question      
 
-    def pop(self):
-        for i in range(0,self.question_per_page):
-            self.set.pop(0)
+    def PopQuiz(self, pop=False) -> object:
+        class StaticForm(Form):
+            class Meta:
+                csrf = False
+
+        if pop:
+            for i in range(0,self.question_per_page):
+                self.set.pop(0)
+        i = 0
+        for line in self.question:
+            i += 1
+            chcs=line['answers']['true']+line['answers']['false']
+            random.shuffle(chcs)
+            setattr(StaticForm,'q'+str(i),SelectMultipleField(line['question'], choices=chcs, validators=[CorrectAnswer(line['answers']['true'])]))
+        return StaticForm()

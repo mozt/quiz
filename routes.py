@@ -1,15 +1,15 @@
 from flask import Flask, render_template, redirect, url_for, request, session
-from quiz import PopQuiz, Quiz
+from quiz import Quiz
 from hashlib import sha256
 import datetime
 import json
 import os
 
 APP_HOST = os.getenv('APP_HOST','127.0.0.1')
-APP_PORT = os.getenv('APP_PORT', 5000)
+APP_PORT = os.getenv('APP_PORT', 8080)
 DEBUG = False
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=20)
-SECRET_KEY = 'Kgvb*&3dYJUKF^Sv12ecys'
+SECRET_KEY = os.urandom(24)
 QUIZ_FILE = './quiz.json'
 USER_FILE = './users.json'
 
@@ -21,10 +21,9 @@ def quiz():
     if session.get('user'):
         data = Quiz.fromJSON(session['data'])
         try:
-            form = PopQuiz(data)
+            form = data.PopQuiz()
             if form.validate_on_submit():
-                data.pop()
-                form = PopQuiz(data)
+                form = data.PopQuiz(pop=True)
                 session['data'] = data.toJSON()
                 return render_template('quiz.html', form=form, msg='Не, ну заебок же!')
             else:
@@ -82,5 +81,5 @@ def logout():
 if __name__ == '__main__':
     with open(app.config.get('USER_FILE'), 'rt') as f:
         users = json.loads(f.read())
-        f.close()
+    f.close()
     app.run(host=app.config.get('APP_HOST'), port=app.config.get('APP_PORT'))
