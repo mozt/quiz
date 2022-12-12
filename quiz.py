@@ -15,20 +15,18 @@ class CorrectAnswer(object):
         if field.data != self.answer:
             raise ValidationError(message)
 
-class PopQuiz(Form):
-    class Meta:
-        csrf = False
+def PopQuiz(data):
+    class StaticForm(Form):
+        class Meta:
+            csrf = False
 
-    @classmethod
-    def builder(cls, data):
-        i = 0
-        for line in data.question:
-            i += 1
-            chcs=line['answers']['true']+line['answers']['false']
-            random.shuffle(chcs)
-            setattr(cls,'q'+str(i),SelectMultipleField(line['question'],
-                                              choices=chcs,
-                                              validators=[CorrectAnswer(line['answers']['true'])]))
+    i = 0
+    for line in data.question:
+        i += 1
+        chcs=line['answers']['true']+line['answers']['false']
+        random.shuffle(chcs)
+        setattr(StaticForm,'q'+str(i),SelectMultipleField(line['question'], choices=chcs, validators=[CorrectAnswer(line['answers']['true'])]))
+    return StaticForm()
 
 class Quiz(object):
     def __init__(self, file=None, from_json=False, data=None):
@@ -55,8 +53,11 @@ class Quiz(object):
         question = []
         for i in range(0,self.question_per_page):
             try:
-                question.append(self.set.pop())
+                question.append(self.set[i])
             except IndexError:
                 raise IndexError('Set ended')
         return question
 
+    def pop(self):
+        for i in range(0,self.question_per_page):
+            self.set.pop(i)

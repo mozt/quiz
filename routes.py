@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, render_template_string
+from flask import Flask, render_template, redirect, url_for, request, session
 from quiz import PopQuiz, Quiz
 from hashlib import sha256
 import datetime
@@ -6,7 +6,7 @@ import json
 import os
 
 APP_HOST = os.getenv('APP_HOST','127.0.0.1')
-APP_PORT = os.getenv('APP_PORT', 8080)
+APP_PORT = os.getenv('APP_PORT', 5000)
 DEBUG = False
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=20)
 SECRET_KEY = 'Kgvb*&3dYJUKF^Sv12ecys'
@@ -21,12 +21,10 @@ def quiz():
     if session.get('user'):
         data = Quiz.fromJSON(session['data'])
         try:
-            if request.method == 'GET':
-                PopQuiz.builder(data)
-            form = PopQuiz()
+            form = PopQuiz(data)
             if form.validate_on_submit():
-                PopQuiz.builder(data)
-                form = PopQuiz()
+                data.pop()
+                form = PopQuiz(data)
                 session['data'] = data.toJSON()
                 return render_template('quiz.html', form=form, msg='Не, ну заебок же!')
             else:
