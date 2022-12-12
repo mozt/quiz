@@ -5,7 +5,7 @@ import datetime
 import json
 import os
 
-APP_HOST = os.getenv('APP_HOST','127.0.0.1')
+APP_HOST = os.getenv('APP_HOST', '127.0.0.1')
 APP_PORT = os.getenv('APP_PORT', 8080)
 DEBUG = False
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=20)
@@ -15,6 +15,7 @@ USER_FILE = './users.json'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def quiz():
@@ -36,13 +37,15 @@ def quiz():
             return render_template('end.html')
     else:
         return redirect(url_for('login'))
-    
+
+
 @app.get('/reload')
 def reload():
     if session.get('user'):
         data = Quiz(file=app.config.get('QUIZ_FILE'))
         session['data'] = data.toJSON()
         return redirect('/')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -73,10 +76,12 @@ def login():
         </form>
         """
 
+
 @app.route('/logout')
 def logout():
     session.pop('user', default=None)
     return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     with open(app.config.get('USER_FILE'), 'rt') as f:
