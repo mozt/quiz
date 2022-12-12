@@ -60,4 +60,4 @@ class Quiz(object):
 
     def pop(self):
         for i in range(0,self.question_per_page):
-            self.set.pop(i)
+            self.set.pop(0)
