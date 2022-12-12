@@ -29,7 +29,6 @@ def quiz():
                 return render_template('quiz.html', form=form, msg='Не, ну заебок же!')
             else:
                 if request.method == 'GET':
-                    session['data'] = data.toJSON()
                     return render_template('quiz.html', form=form)
                 else:
                     return render_template('quiz.html', form=form, msg='Миша, все хуйня, давай по новой!')
