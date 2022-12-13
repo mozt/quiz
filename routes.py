@@ -41,9 +41,10 @@ def quiz():
 @app.get('/reload')
 def reload():
     if session.get('user'):
-        data = Quiz(file=app.config.get('QUIZ_FILE'))
-        session['data'] = data.toJSON()
+        session['data'] = Quiz(file=app.config.get('QUIZ_FILE')).toJSON()
         return redirect('/')
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
