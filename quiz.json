@@ -1,84 +1,72 @@
 {
-    "question-per-page": 1,
-    "question-per-test": 4,
+    "question_per_page": 1,
+    "question_per_test": 4,
     "questions": [
         {
+            "correct_answers": [
+                "one"
+            ],
             "question": "The answer to question one is 1.",
-            "answers": {
-                "true": [
-                    "one"
-                ],
-                "false": [
-                    "two",
-                    "three",
-                    "four"
-                ]
-            }
+            "wrong_answers": [
+                "two",
+                "three",
+                "four"
+            ]
         },
         {
-            "question": "The answer to question one is 2.",
-            "answers": {
-                "true": [
-                    "two"
-                ],
-                "false": [
-                    "one",
-                    "three",
-                    "four"
-                ]
-            }
-        },
-        {
+            "correct_answers": [
+                "two",
+                "three"
+            ],
             "question": "The answer to question one is 2 & 3.",
-            "answers": {
-                "true": [
-                    "two",
-                    "three"
-                ],
-                "false": [
-                    "one",
-                    "four"
-                ]
-            }
+            "wrong_answers": [
+                "one",
+                "four"
+            ]
         },
         {
+            "correct_answers": [
+                "one",
+                "three",
+                "four"
+            ],
             "question": "The answer to question one is 1 & 4 & 3.",
-            "answers": {
-                "true": [
-                    "one",
-                    "three",
-                    "four"
-                ],
-                "false": [
-                    "two"
-                ]
-            }
+            "wrong_answers": [
+                "two"
+            ]
         },
         {
-            "question": "The answer to question one is 4.",
-            "answers": {
-                "true": [
-                    "four"
-                ],
-                "false": [
-                    "one",
-                    "three",
-                    "two"
-                ]
-            }
-        },
-        {
+            "correct_answers": [
+                "five"
+            ],
             "question": "The answer to question one is 5.",
-            "answers": {
-                "true": [
-                    "five"
-                ],
-                "false": [
-                    "four",
-                    "three",
-                    "two"
-                ]
-            }
+            "wrong_answers": [
+                "four",
+                "three",
+                "two"
+            ]
+        },
+        {
+            "correct_answers": [
+                "two"
+            ],
+            "question": "The answer to question one is 2.",
+            "wrong_answers": [
+                "one",
+                "three",
+                "four"
+            ]
+        },
+        {
+            "correct_answers": [
+                "four"
+            ],
+            "question": "The answer to question one is 4.",
+            "wrong_answers": [
+                "one",
+                "three",
+                "two"
+            ]
         }
     ]
 }

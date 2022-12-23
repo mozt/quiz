@@ -1,64 +1,62 @@
-from flask_wtf import FlaskForm as Form
-from wtforms import SelectMultipleField
-from wtforms.validators import ValidationError
+from pathlib import Path
+from typing import List, Dict
 import json
 import random
 
-
-class CorrectAnswer(object):
-    def __init__(self, answer):
-        self.answer = answer
-
-    def __call__(self, form, field):
-        message = 'Incorrect answer.'
-        field.data.sort()
-        self.answer.sort()
-        if field.data != self.answer:
-            raise ValidationError(message)
+from helpers import QuizQuestion, QuizEnded
 
 
 class Quiz(object):
-    def __init__(self, file=None, from_json=False, data=None):
-        if from_json:
-            self.set = data['set']
-            self.question_per_page = data['question_per_page']
-        else:
+    def __init__(
+            self,
+            file: Path | None = None,
+            json_dct: str | bytes | bytearray | None = None,
+    ) -> None:
+        if json_dct is not None:
+            data: Dict = json.loads(json_dct)
+        elif file is not None:
             with open(file, 'rt') as f:
                 data = json.loads(f.read())
-                self.set = random.sample(data['questions'], data['question-per-test'])
-                self.question_per_page = data['question-per-page']
-                random.shuffle(self.set)
             f.close()
+        else:
+            raise NotImplementedError
+        self.question_per_page = data['question_per_page']
+        self.question_per_test = data['question_per_test']
+        self.questions = []
+        for _ in random.sample(data['questions'], self.question_per_test) if file is not None else data['questions']:
+            self.questions.append(QuizQuestion(
+                question=_['question'], 
+                correct_answers=tuple(_['correct_answers']), 
+                wrong_answers=tuple(_['wrong_answers'])))
 
-    def toJSON(self) -> bytes:
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+    def _serialization_filter(self) -> Dict:
+        result = {}
+        for k, v in self.__dict__.items():
+            if k not in ('form_builder',):
+                result[k] = v
+        return result
+
+    def to_json(self) -> str:
+        return json.dumps(
+            self._serialization_filter(),
+            default=lambda o: o.__dict__,
+            sort_keys=True,
+            indent=4)
 
     @staticmethod
-    def fromJSON(json_dct) -> object:
-        return Quiz(from_json=True, data=json.loads(json_dct))
+    def from_json(json_dct: str | bytes | bytearray) -> "Quiz":
+        return Quiz(json_dct=json_dct)
 
     @property
-    def question(self) -> list:
+    def question(self) -> List[QuizQuestion]:
         question = []
         for _ in range(0, self.question_per_page):
             try:
-                question.append(self.set[_])
+                question.append(self.questions[_])
             except IndexError:
-                raise IndexError('Set ended')
+                raise QuizEnded('Quiz ended')
         return question
 
-    def PopQuiz(self, pop=False) -> Form:
-        class StaticForm(Form):
-            class Meta:
-                csrf = False
-
-        if pop:
-            for _ in range(0, self.question_per_page):
-                self.set.pop(0)
-        i = 0
-        for _ in self.question:
-            i += 1
-            chcs = _['answers']['true']+_['answers']['false']
-            random.shuffle(chcs)
-            setattr(StaticForm, 'q'+str(i), SelectMultipleField(_['question'], choices=chcs, validators=[CorrectAnswer(_['answers']['true'])]))
-        return StaticForm()
+    def pop_questions(self) -> None:
+        for _ in range(0, self.question_per_page):
+            self.questions.pop(0)
