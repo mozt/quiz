@@ -81,7 +81,6 @@ def logout():
 
 
 if __name__ == '__main__':
-    print(len([1,2,3]))
     dictConfig(app.config.get('LOGGING')) # type: ignore 
     app.logger.debug(f"App configuration:")
     for key, value in app.config.items():
