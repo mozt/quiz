@@ -8,8 +8,6 @@ from helpers import QuizEnded
 from quiz import Quiz
 from users import UsersFromJSON
 
-# TODO: Add Pydantic
-
 
 app = Flask(__name__)
 app.config.from_object('settings')
