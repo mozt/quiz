@@ -1,8 +1,8 @@
+from typing import Iterable
+
 from flask_wtf import FlaskForm as Form
 from wtforms import SelectMultipleField
 from wtforms.validators import ValidationError
-from typing import Iterable
-from random import shuffle
 
 from helpers import QuizQuestion
 
@@ -20,7 +20,7 @@ class CorrectAnswer(object):
             raise ValidationError('Incorrect answer.')
 
 
-def _form_class_generator(form_data: Iterable[SelectMultipleField]) -> Form:
+def _form_object_builder(form_data: Iterable[SelectMultipleField]) -> Form:
     class StaticForm(Form):
         class Meta:
             csrf = False
@@ -31,9 +31,10 @@ def _form_class_generator(form_data: Iterable[SelectMultipleField]) -> Form:
 
 
 def build_form(form_data: Iterable[QuizQuestion]) -> Form:
-    fields = []
-    for _ in form_data:
-        answers = list(_.correct_answers + _.wrong_answers)
-        shuffle(answers)
-        fields.append(SelectMultipleField(_.question, choices=answers, validators=[CorrectAnswer(_.correct_answers)]))
-    return _form_class_generator(fields)
+    return _form_object_builder(
+        [SelectMultipleField(
+            _.question,
+            choices=set(_.correct_answers + _.wrong_answers),
+            validators=[CorrectAnswer(_.correct_answers)]
+        ) for _ in form_data]
+    )

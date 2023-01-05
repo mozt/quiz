@@ -1,23 +1,19 @@
-from flask import Flask, render_template, redirect, url_for, request, session
 from functools import wraps
-import datetime
-import os
+from logging.config import dictConfig
 
-from quiz import Quiz
-from users import UsersFromJSON
+from flask import Flask, redirect, render_template, request, session, url_for
+
 from forms import build_form
 from helpers import QuizEnded
+from quiz import Quiz
+from users import UsersFromJSON
 
-APP_HOST = os.getenv('APP_HOST', '127.0.0.1')
-APP_PORT = os.getenv('APP_PORT', 8080)
-DEBUG = False
-PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=20)
-SECRET_KEY = os.urandom(24)
-QUIZ_FILE = './quiz.json'
-USER_FILE = './users.json'
+# TODO: Add Pydantic
+
 
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object('settings')
+
 
 def check_session_exist(func):
     @wraps(func)
@@ -26,6 +22,7 @@ def check_session_exist(func):
             return func()
         else:
             return redirect(url_for('login_get'))
+
     return check
 
 
@@ -39,16 +36,20 @@ def build_quiz():
             quiz.pop_questions()
             form = build_form(quiz.question)
             session['data'] = quiz.to_json()
-            return render_template('quiz.html', form=form, msg='Не, ну заебок же!')
+            return render_template('quiz.html',
+                                   form=form,
+                                   msg='Не, ну заебок же!')
         else:
-            return render_template('quiz.html', form=form, msg='Миша, все хуйня, давай по новой!')
+            return render_template('quiz.html',
+                                   form=form,
+                                   msg='Миша, все хуйня, давай по новой!')
     except QuizEnded:
         return render_template('end.html')
 
 
 @app.route('/', methods=['GET', 'POST'])
 @check_session_exist
-def quiz():
+def quiz_worker():
     return build_quiz()
 
 
@@ -65,7 +66,7 @@ def login_post():
         session['user'] = request.form['user_name']
         session['data'] = Quiz(app.config.get('QUIZ_FILE')).to_json()
         session.permanent = True
-        return redirect(url_for('quiz'))
+        return redirect(url_for('quiz_worker'))
     else:
         return render_template('login.html'), 401
 
@@ -82,5 +83,11 @@ def logout():
 
 
 if __name__ == '__main__':
-    users = UsersFromJSON(app.config.get('USER_FILE'))
+    print(len([1,2,3]))
+    dictConfig(app.config.get('LOGGING')) # type: ignore 
+    app.logger.debug(f"App configuration:")
+    for key, value in app.config.items():
+        app.logger.debug(f"{key}: {value}")
+    users = UsersFromJSON(app.config.get('USER_FILE')) # type: ignore 
+    app.logger.debug(f"Known users: {', '.join(users.users.keys())}")
     app.run(host=app.config.get('APP_HOST'), port=app.config.get('APP_PORT'))

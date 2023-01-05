@@ -1,9 +1,11 @@
 import json
-from pathlib import Path
+from abc import ABC, abstractmethod
 from hashlib import sha256
+from pathlib import Path
 
 
-class Users(object):
+class Users(ABC):
+    @abstractmethod
     def check_login(self, username: str, password: str) -> bool:
         raise NotImplementedError
 
