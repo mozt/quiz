@@ -11,11 +11,17 @@ from users import UsersFromJSON
 
 app = Flask(__name__)
 app.config.from_object('settings')
-
+users = UsersFromJSON(app.config.get('USER_FILE')) # type: ignore
+dictConfig(app.config.get('LOGGING')) # type: ignore 
+app.logger.debug(f"App configuration:")
+for key, value in app.config.items():
+    app.logger.debug(f"{key}: {value}") 
+app.logger.debug(f"Known users: {', '.join(users.users.keys())}")
 
 def check_session_exist(func):
     @wraps(func)
     def check():
+        app.logger.debug(f"Check session for {session.items()}")
         if session.get('user'):
             return func()
         else:
@@ -60,12 +66,15 @@ def reload():
 
 @app.post('/login')
 def login_post():
+    app.logger.debug(f"Login from {request.form}")
     if users.check_login(request.form['user_name'], request.form['password']):
+        app.logger.debug(f"Login success")
         session['user'] = request.form['user_name']
         session['data'] = Quiz(app.config.get('QUIZ_FILE')).to_json()
         session.permanent = True
         return redirect(url_for('quiz_worker'))
     else:
+        app.logger.debug(f"Login failed")
         return render_template('login.html'), 401
 
 
@@ -81,10 +90,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    dictConfig(app.config.get('LOGGING')) # type: ignore 
-    app.logger.debug(f"App configuration:")
-    for key, value in app.config.items():
-        app.logger.debug(f"{key}: {value}")
-    users = UsersFromJSON(app.config.get('USER_FILE')) # type: ignore 
-    app.logger.debug(f"Known users: {', '.join(users.users.keys())}")
     app.run(host=app.config.get('APP_HOST'), port=app.config.get('APP_PORT'))
