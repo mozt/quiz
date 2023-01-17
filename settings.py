@@ -6,7 +6,7 @@ from multiprocessing import Array
 
 APP_HOST = os.getenv('APP_HOST', '127.0.0.1')
 APP_PORT = os.getenv('APP_PORT', 8080)
-DEBUG = True
+DEBUG = False
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=20)
 # SECRET_KEY = os.urandom(24)
 # SECRET_KEY = os.getenv('SECRET_KEY')
@@ -53,7 +53,7 @@ LOGGING = {
         },
     },
     'root': {
-        'level': 'DEBUG',
+        'level': 'INFO',
         'handlers': ['wsgi']
     },
 }
